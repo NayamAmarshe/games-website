@@ -2,6 +2,7 @@ const initState = {
 	popular: [],
 	newGames: [],
 	upcomingGames: [],
+	searched: [],
 };
 
 const gamesReducer = (state = initState, action) => {
