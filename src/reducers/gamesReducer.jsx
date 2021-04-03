@@ -14,6 +14,16 @@ const gamesReducer = (state = initState, action) => {
 				newGames: action.payload.newGames,
 				upcomingGames: action.payload.upcomingGames,
 			};
+		case "FETCH_SEARCHED":
+			return {
+				...state,
+				searched: action.payload.searched,
+			};
+		case "CLEAR_SEARCH":
+			return {
+				...state,
+				searched: [],
+			};
 		default:
 			return { ...state };
 	}

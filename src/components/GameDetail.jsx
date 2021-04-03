@@ -3,20 +3,58 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { smallImage } from "../util";
 
-const GameDetail = () => {
+import apple from "../img/apple.svg";
+import gamepad from "../img/gamepad.svg";
+import nintendo from "../img/nintendo.svg";
+import steam from "../img/steam.svg";
+import xbox from "../img/xbox.svg";
+import playstation from "../img/playstation.svg";
+import starEmpty from "../img/star-empty.png";
+import starFull from "../img/star-full.png";
+
+const GameDetail = ({ pathId }) => {
 	const history = useHistory();
 	const { screen, game, isLoading } = useSelector((state) => state.detail);
 
 	const exitDetailHandler = (e) => {
 		const element = e.target;
-		console.log(element);
 		if (element.classList.contains("shadow")) {
 			document.body.style.overflow = "auto";
 			history.push("/");
 		}
 	};
 
+	const getStars = () => {
+		const rating = Math.floor(game.rating);
+		let stars = [];
+		for (let i = 0; i < 5; i++) {
+			if (i <= rating) {
+				stars.push(<img alt="star" key={i} src={starFull}></img>);
+			} else {
+				stars.push(<img alt="emptyStar" key={i} src={starEmpty}></img>);
+			}
+		}
+		return stars;
+	};
+
+	const getPlatform = (platform) => {
+		switch (platform) {
+			default:
+				return gamepad;
+			case "Playstation 4":
+				return playstation;
+			case "Xbox One":
+				return xbox;
+			case "PC":
+				return steam;
+			case "Nintendo Switch":
+				return nintendo;
+			case "iOS":
+				return apple;
+		}
+	};
 	return (
 		<>
 			{!isLoading && (
@@ -24,25 +62,36 @@ const GameDetail = () => {
 					className="card-shadow shadow"
 					onClick={exitDetailHandler}
 				>
-					<StyledDetail className="detail">
+					<StyledDetail layoutId={pathId} className="detail">
 						<StyledStats className="stats">
 							<div className="rating">
-								<h3>{game.name}</h3>
-								<p>Rating: {game.rating}</p>
+								<motion.h3 layoutId={`title ${pathId}`}>
+									{game.name}
+								</motion.h3>
+								<p>Rating:</p>
+								{getStars()}
 							</div>
 							<StyledInfo className="info">
 								<h3>Platforms</h3>
 								<StyledPlatforms className="platforms">
 									{game.platforms.map((data) => (
-										<h3 key={data.platform.id}>
-											{data.platform.name}
-										</h3>
+										<img
+											key={data.platform.id}
+											src={getPlatform(
+												data.platform.name
+											)}
+											alt="platform"
+										></img>
 									))}
 								</StyledPlatforms>
 							</StyledInfo>
 						</StyledStats>
 						<StyledMedia className="media">
-							<img src={game.background_image} alt="background" />
+							<motion.img
+								layoutId={`image ${pathId}`}
+								src={game.background_image}
+								alt="background"
+							/>
 						</StyledMedia>
 						<StyledDescription className="description">
 							<p>{game.description_raw}</p>
@@ -51,7 +100,8 @@ const GameDetail = () => {
 							{screen.results.map((screen) => (
 								<img
 									key={screen.id}
-									src={screen.image}
+									src={smallImage(screen.image, 1280)}
+									// src={screen.image}
 									alt="screenshot"
 								/>
 							))}
@@ -76,6 +126,7 @@ const StyledCardShadow = styled(motion.div)`
 	min-height: 100vh;
 	overflow-y: scroll;
 	position: fixed;
+	z-index: 5;
 	top: 0;
 	left: 0;
 	&::-webkit-scrollbar {
@@ -92,6 +143,7 @@ const StyledCardShadow = styled(motion.div)`
 const StyledDetail = styled(motion.div)`
 	width: 60%;
 	border-radius: 1rem;
+	z-index: 10;
 	padding: 2rem 5rem;
 	background: white;
 	position: absolute;
@@ -107,6 +159,12 @@ const StyledStats = styled(motion.div)`
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	img {
+		margin-top: 1rem;
+		width: 1rem;
+		height: 1rem;
+		display: inline;
+	}
 `;
 
 const StyledInfo = styled(motion.div)`
